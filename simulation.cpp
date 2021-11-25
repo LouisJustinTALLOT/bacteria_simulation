@@ -2,6 +2,7 @@
 #include <random>
 #include <cmath>
 #include <ctime>
+#include <fstream>
 
 // g++ simulation.cpp -o simulation -std=c++11
 
@@ -79,15 +80,37 @@ public:
 
         if (proba < 0.8) {
             run();
-            std::cout << "x " << this->_x << "  y " << this->_y << " v " << _current_speed << " t " << _current_theta << " run" << std::endl;
+            // std::cout << "x " << this->_x << "  y " << this->_y << " v " << _current_speed << " t " << _current_theta << " run" << std::endl;
         } else {
             tumble();
-            std::cout << "x " << this->_x << "  y " << this->_y << " v " << _current_speed << " t " << _current_theta << " tumble" << std::endl;
+            // std::cout << "x " << this->_x << "  y " << this->_y << " v " << _current_speed << " t " << _current_theta << " tumble" << std::endl;
         }
     }
 
     void print_stats() {
         std::cout << this->_run_count << " runs | " << this->_tumble_count << " tumbles" << std::endl;
+    }
+
+    void simulate(int nb_steps, bool print_stats = false, bool print_to_file = false) {
+        std::ofstream file;
+
+        if (print_to_file) {
+            file.open("res.csv");
+            file << "x" << ";" << "y" << ";" << "v" << ";" << "theta" << ";" << "t" << "\n";
+        }
+
+        for (int i = 0; i < nb_steps; i++) {
+            this->run_or_tumble();
+            file << this->_x << ";" << this->_y << ";" << this->_current_speed << ";" << this->_current_theta << ";" << i << "\n";
+        }
+
+        if (print_stats) {
+            this->print_stats();
+        }
+
+        if (print_to_file) {
+            file.close();
+        }
     }
 };
 
@@ -96,11 +119,7 @@ int main() {
 
     Bacteria* e_coli = new Bacteria(*env);
 
-    for (int i = 0; i < 100; i++) {
-        e_coli->run_or_tumble();
-    }
-
-    e_coli->print_stats();
+    e_coli->simulate(1000, false, true);
 
     delete e_coli;
     delete env;
