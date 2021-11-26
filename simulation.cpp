@@ -109,12 +109,12 @@ public:
 
     void simulate(int nb_steps, bool print_stats = false, bool print_to_file = false) {
         std::ofstream file;
-        double rms2 = 0.;
+        double MSD = 0.;
         double _sum_squares = 0.;
 
         if (print_to_file) {
             file.open("res.csv");
-            file << "x" << ";" << "y" << ";" << "v" << ";" << "theta" << ";" << "t" << ";" << "RMS" << "\n";
+            file << "x" << ";" << "y" << ";" << "v" << ";" << "theta" << ";" << "t" << ";" << "MSD" << "\n";
             file << 0 << ";" << 0 << ";" << 10 << ";" << 0 << ";" << 0 << ";" << 0 << "\n";
         }
 
@@ -126,10 +126,10 @@ public:
             this->run_or_tumble();
 
             _sum_squares += pow(this->_x - _previous_x, 2) + pow(this->_y - _previous_y, 2);
-            rms2 = _sum_squares / t;
+            MSD = _sum_squares / t;
 
             if (print_to_file) {
-                file << this->_x << ";" << this->_y << ";" << this->_current_speed << ";" << this->_current_theta << ";" << t << ";" << rms2 << "\n";
+                file << this->_x << ";" << this->_y << ";" << this->_current_speed << ";" << this->_current_theta << ";" << t << ";" << MSD << "\n";
             }
         }
 

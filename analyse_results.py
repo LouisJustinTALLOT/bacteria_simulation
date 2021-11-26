@@ -8,7 +8,7 @@ def analyse_results():
     plt.scatter(df["x"], df["y"], c=df["t"], marker='.')
 
     plt.figure()
-    plt.plot(df["t"][1:], df["RMS"][1:])
+    plt.plot(df["t"][1:], df["MSD"][1:])
 
     plt.show()
 
