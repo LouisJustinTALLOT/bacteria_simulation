@@ -4,7 +4,10 @@
 #include <ctime>
 #include <fstream>
 
-// g++ simulation.cpp -o simulation -std=c++11
+/* 
+g++ simulation.cpp -o simulation -std=c++11
+g++ simulation.cpp -o simulation.exe -std=c++11
+*/
 
 // quand la bactérie avance et reçoit plus de "nourriture", il retarde le tumble
 
@@ -46,7 +49,9 @@ protected:
     }
 
 public:
-    Bacteria(Environment& env) : _x(0), _y(0), _current_speed(10), _current_theta(0) {
+    const double INITIAL_SPEED = 10; // µm/s
+
+    Bacteria(Environment& env) : _x(0), _y(0), _current_speed(INITIAL_SPEED), _current_theta(0) {
         this->_env = &env;
 
         this->rng.seed(this->seed);
@@ -87,21 +92,45 @@ public:
         }
     }
 
+    void reset() {
+        this->_x = 0;
+        this->_y = 0;
+
+        this->_run_count = 0;
+        this->_tumble_count = 0;
+
+        this->_current_speed = INITIAL_SPEED;
+        this->_current_theta = 0;
+    }
+
     void print_stats() {
         std::cout << this->_run_count << " runs | " << this->_tumble_count << " tumbles" << std::endl;
     }
 
     void simulate(int nb_steps, bool print_stats = false, bool print_to_file = false) {
         std::ofstream file;
+        double rms2 = 0.;
+        double _sum_squares = 0.;
 
         if (print_to_file) {
             file.open("res.csv");
-            file << "x" << ";" << "y" << ";" << "v" << ";" << "theta" << ";" << "t" << "\n";
+            file << "x" << ";" << "y" << ";" << "v" << ";" << "theta" << ";" << "t" << ";" << "RMS" << "\n";
+            file << 0 << ";" << 0 << ";" << 10 << ";" << 0 << ";" << 0 << ";" << 0 << "\n";
         }
 
-        for (int i = 0; i < nb_steps; i++) {
+        for (int t = 1; t <= nb_steps; t++) {
+            double _previous_x = this->_x;
+            double _previous_y = this->_y;
+            double _add = 0.;
+
             this->run_or_tumble();
-            file << this->_x << ";" << this->_y << ";" << this->_current_speed << ";" << this->_current_theta << ";" << i << "\n";
+
+            _sum_squares += pow(this->_x - _previous_x, 2) + pow(this->_y - _previous_y, 2);
+            rms2 = _sum_squares / t;
+
+            if (print_to_file) {
+                file << this->_x << ";" << this->_y << ";" << this->_current_speed << ";" << this->_current_theta << ";" << t << ";" << rms2 << "\n";
+            }
         }
 
         if (print_stats) {
