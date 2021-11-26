@@ -1,11 +1,17 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("res.csv", sep=";")
 
-plt.scatter(df["x"], df["y"], c=df["t"], marker='.')
+def analyse_results():
+    df = pd.read_csv("res.csv", sep=";")
 
-plt.figure()
-plt.plot(df["t"][1:], df["RMS"][1:])
+    plt.scatter(df["x"], df["y"], c=df["t"], marker='.')
 
-plt.show()
+    plt.figure()
+    plt.plot(df["t"][1:], df["RMS"][1:])
+
+    plt.show()
+
+
+if __name__ == "__main__":
+    analyse_results()
